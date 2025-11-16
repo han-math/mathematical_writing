@@ -1,0 +1,45 @@
+name: Build PDF
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install TeX Live
+      uses: teatimeguest/setup-texlive-action@v2
+      with:
+        packages: >-
+          scheme-medium
+          latexmk
+          amsmath
+          amssymb
+          amsfonts
+          mathtools
+          xcolor
+          graphicx
+          hyperref
+          upgreek
+          mathbbol
+          boondoxupr
+          datetime2
+          booktabs
+          enumitem
+          tikz
+          pgfplots
+
+    - name: Build PDF
+      run: latexmk -pdf -interaction=nonstopmode main.tex
+
+    - name: Upload PDF
+      uses: actions/upload-artifact@v3
+      with:
+        name: compiled-pdf
+        path: main.pdf
