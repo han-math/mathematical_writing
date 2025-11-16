@@ -1,0 +1,769 @@
+\documentclass[12pt,a4paper]{article}  % Use this line if this document will be released
+%\documentclass[12pt,a4paper,draft]{article}  % Use this line if this document is a draft
+\usepackage{ifdraft}
+
+
+%% Bibliography
+\usepackage{etoolbox}
+\newcommand{\bibfile}{\jobname.bib}  % Name of the BibTeX file.
+% ref.bib should be a symbolic link to the universal BibTeX file, which should be a local copy of
+% https://github.com/equipez/bibliographie/blob/main/ref.bib
+% Run `getbib` in the current directory under the draft mode to get the BibTeX file containing only
+% the cited references. The name will be xyz.bib if this TeX file is xyz.tex.
+\newcommand{\universalbib}{ref.bib}
+\ifdraft{\IfFileExists{\universalbib}{\renewcommand{\bibfile}{\universalbib}}{}}{}
+% The counter `cite' is used to count the number of citations.
+\newcounter{cite}
+\pretocmd{\cite}{\stepcounter{cite}}{}{}
+
+
+%% Add line numbers in draft mode
+\RequirePackage[mathlines]{lineno}
+\ifdraft{\linenumbers}{}
+\renewcommand{\linenumberfont}{\normalfont\scriptsize\sffamily\color{gray}}
+\setlength{\linenumbersep}{\marginparsep}
+
+
+%% Geometry
+%\voffset=-1.5cm \hoffset=-1.4cm \textwidth=16cm \textheight=22.0cm  % Luis' setting
+\usepackage[a4paper, textwidth=16.0cm, textheight=22.0cm]{geometry}
+\renewcommand{\baselinestretch}{1.2}
+
+
+%% Basic packages
+\usepackage{amsmath,amsthm,amssymb,amsfonts}
+\usepackage{mathtools}  % Provides \coloneqq
+\usepackage{empheq}
+\usepackage{xcolor}
+\usepackage[bbgreekl]{mathbbol}
+\DeclareSymbolFontAlphabet{\mathbbm}{bbold}
+\DeclareSymbolFontAlphabet{\mathbb}{AMSb}
+\usepackage{bbm}
+\usepackage{upgreek}
+\usepackage{accents}
+\usepackage{xspace}
+\usepackage{rotating}
+\usepackage{multirow,booktabs}
+\usepackage[en-US]{datetime2}
+
+
+%% Format of the table of content
+\usepackage[normalem]{ulem}
+\usepackage[toc,page]{appendix}
+\renewcommand{\appendixpagename}{\Large{Appendix}}
+\renewcommand{\appendixname}{Appendix}
+\renewcommand{\appendixtocname}{Appendix}
+%\usepackage{sectsty}
+\setcounter{tocdepth}{2}
+
+
+%% Section title style
+\usepackage{sectsty}
+\sectionfont{\large}
+\subsectionfont{\large}
+
+
+%% Some colors
+\definecolor{darkblue}{rgb}{0,0.1,0.5}
+\definecolor{darkgreen}{rgb}{0,0.5,0.1}
+\definecolor{darkyellow}{rgb}{0.65,0.65,0.01}
+
+
+%% Todo notes
+\ifdraft{
+    \setlength{\marginparwidth}{2.42cm}
+    \usepackage[tickmarkheight=3pt,textsize=small,backgroundcolor=blue!16,linecolor=purple,bordercolor=purple]{todonotes}
+}{
+    \newcommand{\todo}[1]{}
+    \newcommand{\listoftodos}{}
+}
+
+
+%% Graph, tikz and pgf
+%\usepackage{subfigure}
+\setlength{\unitlength}{1mm}
+% The \unitlength command is a Length command. It defines the units used in the Picture Environment.
+\usepackage{graphicx}
+%\usepackage{tikz,tikzscale,pgf,pgfarrows,pgfnodes,filecontents,tikz-cd}
+\usepackage{tikz,tikzscale,pgf}
+\usetikzlibrary{arrows,arrows.meta,patterns,positioning,decorations.markings,shapes}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\usepackage[justification=centering]{caption}
+\usepgfplotslibrary{fillbetween}
+\pgfplotsset{compat=1.11}
+
+
+%% Turn off some unharmful warnings in draft mode
+%% N.B.: DO NOT use `silence` together with `hyperref`. They will cause an infinite loop.
+\ifdraft{
+    \usepackage{silence}
+    \WarningFilter{xcolor}{Incompatible color definition on}
+    \WarningFilter{hyperref}{Draft mode on}
+    \WarningFilter{refcheck}{Unused label}
+    \WarningFilter{microtype}{`draft' option active}
+    \WarningFilter{latex}{Writing or overwriting file} % Mute the warning about 'writing/overwriting file'
+    \WarningFilter{latex}{Writing file} % Mute the warning about 'writing/overwriting file'
+    \WarningFilter{latex}{Tab has} % Mute the warning about 'Tab has been converted to Blank Space'
+    \WarningFilter{latex}{Marginpar on page} % Mute the warning about 'Marginpar on page xx moved'
+    \WarningFilter{latex}{author given} % Mute the warning about 'No \author given'
+}{}
+
+
+%% Hyperref, url, and email
+%% N.B.: DO NOT use `silence` together with `hyperref`. They will cause an infinite loop.
+\ifdraft{\usepackage{refcheck}\newcommand{\url}{\texttt}}{
+    \usepackage{hyperref}
+    \hypersetup{colorlinks=true, linkcolor=darkblue, anchorcolor=darkblue, citecolor=darkblue, urlcolor=darkblue,linktoc=all}
+    \usepackage{url}
+} % Check unused labels
+\newcommand{\email}{\texttt}
+
+
+%% Enumerate and itemize
+\usepackage{eqlist}
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=*}
+\setlist[enumerate]{leftmargin=*,label=\normalfont{(\alph*)}}
+
+
+%% Algorithm environment
+\usepackage[section]{algorithm}
+\usepackage{algpseudocode,algorithmicx}
+\newcommand{\INPUT}{\textbf{Input}}
+\newcommand{\FOR}{\textbf{For}~}
+\algrenewcommand\algorithmicrequire{\textbf{Input:}}
+\algrenewcommand\algorithmicensure{\textbf{Output:}}
+\algrenewcommand\alglinenumber[1]{\normalsize #1.}
+\newcommand*\Let[2]{\State #1 $=$ #2}
+
+
+%% Theorem-like environments
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{conjecture}{Conjecture}[section]
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{exercise}{Exercise}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{problem}{Problem}[section]
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{assumption}{Assumption}[section]
+\newtheorem{example}{Example}[section]
+\newtheorem{question}{Question}[section]
+% Change theoremstyle to ``definition'', which uses textnormal for the text.
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{remark}{Remark}[section]
+% proof
+\usepackage{xpatch}
+\xpatchcmd{\proof}{\itshape}{\normalfont\proofnamefont}{}{}
+\newcommand{\proofnamefont}{\bfseries}
+
+%% Equation numbering
+\numberwithin{equation}{section}
+
+
+%% Fine tuning
+\usepackage{microtype}
+\usepackage[nobottomtitles*]{titlesec} % No section title at the bottom of pages
+% Prevent footnote from running to the next page
+\interfootnotelinepenalty=10000
+% No line break in inline math
+\interdisplaylinepenalty=10000
+\relpenalty=10000
+\binoppenalty=10000
+% No widow or orphan lines
+\clubpenalty=10000
+\widowpenalty=10000
+\displaywidowpenalty=10000
+
+
+% Use @ to put 1 math unit (mu) in math
+% See https://nhigham.com/2013/01/07/fine-tuning-spacing-in-latex-equations/
+% and also TeXbook p. 155.
+\mathcode`@="8000{\catcode`\@=\active\gdef@{\mkern1mu}}
+
+
+%% Operators, commands
+\usepackage{relsize}
+\usepackage{nccmath}
+%\DeclareMathOperator*{\mcap}{\,\medmath{\bigcap}\,}
+%\DeclareMathOperator*{\mcup}{\,\medmath{\bigcup}\,}
+\DeclareMathOperator*{\mcap}{\,\mathsmaller{\bigcap}\,}
+\DeclareMathOperator*{\mcup}{\,\mathsmaller{\bigcup}\,}
+%\renewcommand{\cap}{\mcap}
+%\renewcommand{\cup}{\mcup}
+
+\newcommand{\ceil}[1]{ {\lceil{#1}\rceil} }
+\newcommand{\floor}[1]{ {\lfloor{#1}\rfloor} }
+
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\sort}{sort}
+\DeclareMathOperator*{\Argmax}{Argmax}
+\DeclareMathOperator*{\Argmin}{Argmin}
+\DeclareMathOperator*{\Arglocmin}{Arglocmin}
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\diag}{diag}
+\DeclareMathOperator*{\Diag}{Diag}
+\DeclareMathOperator{\Span}{span}
+\DeclareMathOperator{\med}{med}
+\DeclareMathOperator{\essinf}{essinf}
+\DeclareMathOperator{\cl}{cl}
+\DeclareMathOperator{\vol}{vol}
+\DeclareMathOperator{\comp}{C}
+\DeclareMathOperator{\sign}{sign}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\range}{range}
+\DeclareMathOperator{\card}{card}
+\DeclareMathOperator{\diam}{diam}
+\DeclareMathOperator{\dist}{dist}
+\newcommand{\disth}{{\operatorname{\updelta_{\sss{H}}}}}
+\newcommand{\ind}{\mathbbm{1}}
+%\newcommand*{\defeq}{\stackrel{\mbox{\normalfont\tiny{\textnormal{def}}}}{=}}
+\newcommand\defeq{\mathrel{\overset{\makebox[0pt]{\mbox{\normalfont\tiny\sffamily def}}}{=}}}
+
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\BB}{\mathcal{B}}
+\renewcommand{\SS}{\mathbb{S}}
+\newcommand{\TT}{\mathcal{T}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\FF}{\mathcal{F}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\XX}{\mathcal{X}}
+\newcommand{\sset}{\mathcal{S}}
+\newcommand{\pen}{h}
+\newcommand{\penpar}{\mu}
+\newcommand{\res}{\rho}
+\newcommand{\col}{r}
+\newcommand{\ofd}{\mathcal{F}}
+\newcommand{\stf}[1]{\mathbb{S}^{#1}}
+\newcommand{\sss}[1]{{\scriptscriptstyle{#1}}}
+\newcommand{\sK}{{\scriptscriptstyle{K}}}
+\newcommand{\sT}{{\scriptscriptstyle{T}}}
+\newcommand{\fro}{{\scriptstyle{\textnormal{F}}}}
+\newcommand{\trs}{{\scriptstyle{\mathsf{T}}}}
+\newcommand{\hmt}{{\scriptstyle{{\mathsf{H}}}}}
+\newcommand{\pin}{{\scriptstyle{{\mathsf{+}}}}}
+\newcommand{\inv}{{-1}}
+\newcommand{\adj}{*}
+\newcommand{\ones}{\mathbf{1}}
+
+\newcommand{\cs}{\text{c}}
+\newcommand{\hp}{\circ}
+\newcommand{\cc}{\sss{\textnormal{C}}}
+\newcommand{\dec}{\sss{\textnormal{D}}}
+\newcommand{\cauchy}{\sss{\textnormal{C}}}
+\newcommand{\scauchy}{\sss{\textnormal{S}}}
+\newcommand{\crit}{\textnormal{crit}}
+\newcommand{\rsg}{\hat{\partial}}
+\newcommand{\gsg}{\partial}
+\newcommand{\dom}{\textnormal{dom}}
+\newcommand{\tf}{{\textnormal{f}}}
+\newcommand{\tg}{{\textnormal{g}}}
+\newcommand{\ts}{{\textnormal{s}}}
+\newcommand{\st}{\textnormal{s.t.}}
+\newcommand{\etc}{{etc.}\xspace}
+\newcommand{\ie}{{i.e.}\xspace}
+\newcommand{\eg}{{e.g.}\xspace}
+\newcommand{\etal}{{et al.}\xspace}
+\newcommand{\iid}{\text{i.i.d.}\xspace}
+\newcommand{\as}{\text{a.s.}\xspace}
+
+\newcommand{\me}{\mathrm{e}}
+\newcommand{\md}{\mathrm{d}}
+\newcommand{\mi}{\mathrm{i}}
+\newcommand{\lev}{\mathrm{lev}}
+\newcommand{\bA}{\mathbf{A}}
+\newcommand{\bx}{\mathbf{u}}
+%\newcommand{\bb}{\mathbf{f}}
+\newcommand{\bb}{\mathbf{r}}
+\newcommand{\nov}{n_{\textnormal{o}}}
+\xspaceaddexceptions{]\}}
+% tex.stackexchange.com/questions/15252/why-does-xspace-behave-differently-for-parenthesis-vs-braces-brackets
+\newcommand{\MATLAB}{\textsc{Matlab}\xspace}
+\newcommand{\octave}{\mbox{GNU Octave}\xspace}
+\newcommand{\prblm}{\texttt}
+\DeclareMathAlphabet{\mathsfit}{T1}{\sfdefault}{\mddefault}{\sldefault}
+\SetMathAlphabet{\mathsfit}{bold}{T1}{\sfdefault}{\bfdefault}{\sldefault}
+\newcommand{\prbb}{\mathsfit{p}}
+\newcommand{\pp}{\mathsf{p}}
+\newcommand{\qq}{\mathsf{q}}
+\newcommand{\ttt}{\mathsfit{t}}
+\newcommand{\tol}{\varepsilon}
+\newcommand{\bt}{\mathbf{t}}
+\newcommand{\br}{\mathbf{r}}
+\newcommand{\dd}{\mathbf{d}}
+\newcommand{\ii}{\mathbf{i}}
+\newcommand{\jj}{\mathbf{j}}
+\newcommand{\xx}{\mathbf{x}}
+\renewcommand{\pp}{\mathbf{p}}
+\renewcommand{\ggg}{\mathbf{g}}
+\newcommand{\GG}{\mathbf{G}}
+\DeclareMathOperator{\expc}{\mathbb{E}}
+\renewcommand{\Pr}{\mathbb{P}}
+\newcommand{\lb}{\underline}
+\newcommand{\ub}{\overline}
+
+% mathlcal font
+\DeclareFontFamily{U}{dutchcal}{\skewchar\font=45 }
+\DeclareFontShape{U}{dutchcal}{m}{n}{<-> s*[1.0] dutchcal-r}{}
+\DeclareFontShape{U}{dutchcal}{b}{n}{<-> s*[1.0] dutchcal-b}{}
+\DeclareMathAlphabet{\mathlcal}{U}{dutchcal}{m}{n}
+\SetMathAlphabet{\mathlcal}{bold}{U}{dutchcal}{b}{n}
+
+% mathscr font (supporting lowercase letters)
+%\usepackage[scr=dutchcal]{mathalfa}
+%\usepackage[scr=esstix]{mathalfa}
+%\usepackage[scr=boondox]{mathalfa}
+%\usepackage[scr=boondoxo]{mathalfa}
+\usepackage[scr=boondoxupr]{mathalfa}
+%\newcommand{\model}{\mathscr{h}}
+\newcommand{\model}{\tilde{f}}
+\newcommand{\rmod}{F}
+
+\newcommand{\Set}[1]{\mathcal{#1}}
+\DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it} % The mathpzc font
+\newcommand{\slv}{\mathpzc}
+% mathpzc looks great, but it stops working on 19 Feb 2020 for no reason.
+%\newcommand{\slv}{\mathscr}
+\newcommand{\software}{\texttt}
+\DeclareMathOperator{\eff}{\mathsf{e}\;\!}
+\DeclareMathOperator{\Eff}{\mathsf{E}\;\!}
+\newcommand{\out}{{\text{out}}}
+
+
+%% Commands for revision
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\green}[1]{\textcolor{darkgreen}{#1}}
+\newcommand{\TYPO}[1]{{\color{orange}{#1}}}
+\newcommand{\MISTAKE}[1]{{\color{violet}{#1}}}
+\newcommand{\REPHRASE}[1]{{\color{darkgreen}{#1}}}
+\newcommand{\REVISE}[1]{{\color{blue}{#1}}}
+\newcommand{\REVISEred}[1]{{\color{red}{#1}}}
+\newcommand{\COMMENT}{\todo}  % Needs the todonotes package
+%\newcommand{\COMMENT}[1]{\textcolor{brown}{{\small{(comment: #1)}}}}  % This puts comments inline
+
+% Use the following if revision is finished
+%\newcommand{\TYPO}{}
+%\newcommand{\MISTAKE}{}
+%\newcommand{\REPHRASE}{}
+%\newcommand{\REVISE}{}
+%\newcommand{\REVISEred}{}
+%\newcommand{\COMMENT}[1]{}  % Input ignored.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{A Sketch of Mathematical Writing }
+
+\date{\DTMnow}
+
+\author{Han Peiqi%
+    \thanks{School of Mathematics, Sun Yat-sen University, Guangzhou, China.}
+    %\and
+    %Author2
+    %\thanks{Information2}
+}
+
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We present practical guidelines for mathematical writing across the pre-draft, drafting, and revision stages, and conclude with an illustrative example based on Hölder’s inequality that demonstrates how informal scratch work can be transformed into a clear and polished proof.
+\end{abstract}
+
+\tableofcontents
+\newpage    
+
+%\textbf{Keywords}: Keyword1, Keyword2
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Introduction}
+
+Clear communication in mathematics and computer science is essential yet difficult. Many people struggle with unclear symbols, weak logical flow, and insufficient attention to the reader’s background. This can make even good technical work hard to understand.
+
+This document draws on materials from Donald E. Knuth’s \textit{Mathematical Writing} course (Stanford, 1987). As Paul Halmos once said, “Anything that helps communication is good.” I hope to share with you some tools that will make your writing clearer and more communicative.
+
+\section{Before You Start}
+Before starting to write mathematics, it is important to prepare yourself with some guiding principles and practical habits. 
+
+The following checklist, inspired by Knuth's \textit{Mathematical Writing}, highlights what you should keep in mind before drafting your work.
+
+\begin{enumerate}
+    \item \textbf{Arm yourself with classics on mathematical writing.} 
+    Before you start writing, familiarize yourself with a few core references:  
+    \begin{itemize}
+        \item \textit{The Elements of Style} by Strunk \& White. It tells about English prose writing in general.  
+        \item \textit{A Handbook for Scholars} by van Leunen. It offers guidance on correctly handling footnotes, references, quotations, etc.  
+        \item Paul Halmos, ``How to Write Mathematics''. A delightful essay on mathematical writing.  
+    \end{itemize}
+    These works will give you a foundation in clarity, style, and professional standards.
+    
+    \item \textbf{Know your audience.}  
+    Always think of your reader first. Try to explain, not to impress. 
+    \begin{itemize}
+        \item Ask yourself what level of mathematical background your audience has.
+        \item Clarify what you intend to explain to readers in this article, and how you can make it clearly and efficiently.
+    \end{itemize}
+    
+    \item \textbf{Plan your article.}
+    Planning your article well can help you avoid many troubles during the formal writing process.
+    \begin{itemize}
+        \item Draft an outline before writing, with sections and key points.
+        \item Choose consistent and convenient notation, and follow its usage throughout your writing.
+        \item Define your terminology and keep it consistent.
+    \end{itemize}
+     
+    
+\end{enumerate}
+
+This checklist is not exhaustive, but following it will save effort later and make your mathematical writing clearer and more effective.
+
+
+\section{Throughout the Writing}
+Formal writing is the most crucial and important part of completing a mathematical work, as it determines whether what we intend to express can be properly and fully conveyed to readers.
+
+In this section, we provide some considerations for paper writing or editing, as well as some extremely common mistakes.
+
+
+  \subsection{Develop a Good Writing Habit}  
+   Some good habits can greatly enhance the readability of your article:   
+    \begin{enumerate}
+    \item Use words to connect different formulas. \\ 
+      \hspace*{2em}Bad: $S_q$, $q<p$.  \\
+      \hspace*{2em}Good: The sequence $S_q$, where $q<p$.
+
+  \item Avoid starting a sentence with a symbol. \\ 
+     \hspace*{2em} Bad: $x^n-a$ has $n$ distinct roots.  \\
+     \hspace*{2em} Good: The polynomial $x^n-a$ has $n$ distinct roots.
+
+  \item Prefer words to logical symbols (such as $\therefore$, $\Rightarrow$, $\forall$, $\exists$), unless the context is formal logic.  
+
+  \item Sentences leading into theorems (or algorithms) should be complete and clear. \\
+     \hspace*{2.4em}Bad: We now have the following \\
+      \hspace*{4.7em}\textbf{Theorem.} $H(x)$ is continuous. \\
+       \hspace*{2.4em}Good: We can now prove the following result. \\
+       \hspace*{5.3em}\textbf{Theorem.} The function $H(x)$ defined in (5) is continuous.
+
+   
+    \item Use ``we'' instead of ``I'' unless necessary. This can avoid  passive voice and create a sense of closeness for readers.
+
+    \item Do not omit ``that'' when it clarifies meaning.\\
+    \hspace*{2.4em} Bad: Assume $A$ is a group.\\
+    \hspace*{2.4em} Good: Assume that $A$ is a group.
+    
+    \item Vary sentence structure and word choice to avoid monotony. Use parallelism when discussing parallel ideas.  
+    Avoid repetitive sticky words like ``this'' or ``also'' in consecutive sentences.  
+    
+    \item Do not write in homework style by merely listing formulas.  Tie the formulas together with explanatory commentary. 
+
+    \item Maintain a humble writing style and never use exaggerated praise, whether explicit or implicit, even if you are enthusiastic.
+
+    \item Keep notation consistent throughout the document. Avoid reusing the same symbol for different concepts.  
+
+    \item Important formulas should be displayed on their own line. Reference them clearly if they are important to later arguments.  
+
+    \item Capitalize names of results and methods: Theorem 1, Lemma 2, Algorithm 3.  
+
+    \item Don't say ``which'' when ``that'' sounds better, and don't say ``less'' when the proper word is ``fewer''.\\
+    \hspace*{2.4em} Bad: Don't use commas which aren't necessary.\\
+    \hspace*{2.4em} Better: Don't use commas that aren't necessary.
+
+    \item The opening paragraph should be the strongest, and the first sentence the clearest. Avoid starting with vague forms like “An $x$ is $y$.”\\
+    \hspace*{2.4em} Bad: An important method for internal sorting is quicksort.\\
+    \hspace*{2.4em} Good: Quicksort is an important method for internal sorting, because . . .
+
+    \item Use standard punctuation.
+        
+  \end{enumerate}
+
+    
+    \subsection{Pay Attention to Language Details} Language details are crucial because they determine the clarity and precision of mathematical writing. A well-crafted sentence helps readers understand mathematics better, rather than adding to the difficulty of reading.
+    
+    \begin{enumerate}
+    \item Check spelling carefully; many technical terms are easy to misspell.
+    \begin{itemize}
+    \item ``compliment'' (incorrect) $\to$ "complement" (correct)
+    \item ``occurence'' (incorrect) $\to$ "occurrence" (correct)
+    \item ``feasable'' (incorrect) $\to$ "feasible" (correct)
+    \end{itemize}
+    \item  Read your sentences aloud: if they sound clumsy, they will also read poorly.
+    
+    \item Avoid excessive subscripts and superscripts; prefer simpler notation when possible.  
+    
+    \item Write sentences that are unambiguous from left to right. Avoid structures that confuse subject and predicate around formulas.  
+
+    \item Structure your sentences so that they flow smoothly even when formulas are removed.
+
+   \end{enumerate}
+   
+    \subsection{Keep the Reader Oriented} During the writing process, you should still be reader-oriented: your writing should guide the reader, and the purpose of the article should ultimately be to help the reader understand.
+    
+    \begin{enumerate}
+    \item Provide motivation for each definition, theorem, or section: explain why it appears.  
+    
+    \item Use signposting phrases like ``Next we prove...'' or ``As a consequence of the previous lemma...'' .  
+    
+    \item At the end of a long proof or argument, summarize the key idea in one or two sentences. 
+    \end{enumerate}
+
+    \subsection{Use Diagrams Wisely} Diagrams can convey structure that prose expresses awkwardly. While mathematics relies on logical rigor, a well–chosen diagram can provide intuition, reveal structure, and make the argument memorable. 
+    
+For example, geometric configurations or set relations are often clearer when drawn than when described in words alone. 
+The goal is not to replace proofs with pictures, but to deploy diagrams as an explanatory aid.
+
+   \subsection{Develop Your Own Style}  While writing requires clarity, coherence, and precision, it should not feel mechanical or rigid. Knuth once reminded us that developing one’s own style is crucial.
+   
+A personal style develops through practice and reflection, and the process can be organized around two steps.
+
+\begin{enumerate}
+\item Experiment with different tones: Some mathematicians adopt an extremely formal writing style, while others use a more conversational one. Try various approaches to find the expression that makes your arguments flow most naturally.
+
+\item Learn from excellent models: Read papers or books you admire, analyze why they are easy (or difficult) to read, and integrate the methods that work for you into your own writing.
+
+\end{enumerate}
+
+What matters most in developing your style is maintaining consistency and pursuing authenticity. You should adhere to a unified style, avoid merely imitating others’ writing, and cultivate your own professional characteristics through practice.
+
+    
+\section{After You Finish}
+Even after the last line is written, good mathematical writing is not complete. Actually, completing a first draft is only the beginning. Careful revision and rereading are necessary to ensure clarity and precision.
+
+\begin{enumerate}
+    \item \textbf{Revise with fresh eyes.}  
+    Put the draft aside for a while, then read it again. Time away helps you see unclear passages or unnecessary complexity.  
+    And you can imagine you are not the author but a student or colleague encountering your work for the first time. Ask yourself: Does every step follow naturally? Are all assumptions stated?  
+
+    \item \textbf{Polish the presentation.}  
+    Ensure consistency of symbols, terminology, and abbreviations. Avoid mixing notations for the same concept, as this can confuse even advanced readers. Verify that every formula is part of a complete sentence, every theorem is self-contained, and every figure or table has a clear caption.  
+    
+    Additionally, look for small but important errors: mismatched parentheses, missing minus signs, typos in variables, or awkward phrasing. Such details, though minor, can mislead readers.  
+
+    \item \textbf{Seek feedback.}  
+    If possible, ask a peer to read your draft. Others can often spot unclear explanations that you, as the author, might overlook. Professional proofreaders and designers can help you resolve typesetting issues; meanwhile, feedback from reviewers can further polish your paper.
+
+\end{enumerate}
+
+\section{An Example of H\"older's Inequality}
+
+In this section, we will take the proof of H\"older's Inequality as an example to illustrate how to complete the proof of a theorem.
+
+As an important inequality in analysis, H\"older's Inequality finds applications in many fields, such as probability theory and partial differential equations. In this section, we present three proofs: the first one, a negative example, is taken from my scratch paper; the second is based on \textit{Measure, Integration \& Real Analysis} by Sheldon Axler; and the third is based on \textit{Partial Differential Equations} by O.~A.~Oleinik.
+
+
+
+First, we present H\"older's Inequality.
+
+
+
+\begin{theorem}[H\"older's Inequality]\label{thm:holder}
+Let $p>1$ and $p'>1$ satisfy $\frac1p+\frac1{p'}=1$. If $f\in L^{p}(E)$ and $g\in L^{p'}(E)$, then
+\[
+\int_E |f(x)g(x)|\,dx
+\le
+\Bigl(\int_E |f(x)|^{p}\,dx\Bigr)^{1/p}
+\Bigl(\int_E |g(x)|^{p'}\,dx\Bigr)^{1/p'}.
+\]
+
+Moreover, equality holds if and only if $|f|^{p}$ and $|g|^{p'}$ are proportional almost everywhere.
+Equivalently, $\|fg\|_{1}\le \|f\|_{p}\,\|g\|_{p'}$.
+\end{theorem}
+
+
+\subsection{The First Solution}
+
+We first show a rough version to illustrate common problems. 
+This proof has several weaknesses.
+
+\begin{itemize}
+    \item It directly states the results of key steps from the scratch paper without any explanation.
+    \item It fails to specify the exact form of Young's inequality (used in the middle of the proof) or to include its own proof.
+    \item It gives vague and ineffective descriptions of the equality condition.
+    \item It contains typesetting flaws: important mathematical expressions are not displayed on separate lines.
+\end{itemize}
+
+Overall, it lacks sufficient explanation and detail, and does not consider the readers' background knowledge.
+
+
+
+
+\begin{proof}[The First Solution of H\"older's Inequality]
+If $\|f\|_{p}=0$ or $\|g\|_{p'}=0$, then $f(x)g(x)=0$ a.e. on $E$, i.e., $\|fg\|_{1}=0$. So the theorem holds in this case.
+
+When $\|f\|_{p}>0$ and $\|g\|_{p'}>0$, by Young's inequality we have
+$\frac{|f(x)g(x)|}{\|f\|_{p}\|g\|_{p'}}
+\le
+\frac{1}{p}\frac{|f(x)|^p}{\|f\|_p^p}
++
+\frac{1}{p'}\frac{|g(x)|^{p'}}{\|g\|_{p'}^{p'}}.
+$
+ Integrating both sides over $E$ gives the desired inequality.
+
+By the equality condition in Young's inequality, we also obtain the equality condition in H\"older's inequality.
+\end{proof}
+
+\subsection{The Second Solution}
+
+Next, we present the second proof. This version fixes the formatting issues in the first proof and supplies the necessary details.
+
+It begins with a lemma that proves Young’s inequality, which provides the key estimate used to establish Hölder’s inequality.
+
+
+
+
+\begin{lemma}[Young's Inequality]\label{lem:young}
+Let $p>1$ and $p'>1$ satisfy $\frac{1}{p}+\frac{1}{p'}=1$. Then, for any non-negative real numbers $a$ and $b$, we have
+\[
+ab \le \frac{a^p}{p} + \frac{b^{p'}}{p'}.
+\]
+\end{lemma}
+
+The inequality involves two variables. By fixing one variable and differentiating with respect to the other, we obtain the extremum and hence the desired inequality.
+
+With this consideration in mind, we now proceed to implement it.
+
+\begin{proof}[Proof of Young's Inequality]
+Fix $b>0$ and define a function  $f:(0,\infty)\to \mathbb{R}$ by
+\[
+f(a)=\frac{a^p}{p}+\frac{b^{p'}}{p'}-ab.
+\]
+
+Thus $f'(a)=a^{p-1}-b$. Hence $f$ is decreasing on the interval $(0,b^{1/(p-1)})$ and $f$ is increasing on the interval $(b^{1/(p-1)},\infty)$. Thus $f$ has a global minimum at $b^{1/(p-1)}$. We calculate the value of $f$ at this point
+
+\begin{alignat*}{2}
+f\!\left(b^{1/(p-1)}\right)
+&= \frac{b^{\frac{p}{p-1}}}{p}+\frac{b^{p'}}{p'}-b^{\frac{p}{p-1}}  & \\
+&= \frac{1}{p'}\!\left(b^{p'}-b^{\frac{p}{p-1}}\right) 
+&\quad (\text{since } \tfrac{1}{p}-1=-\tfrac{1}{p'}) \\[3pt]
+&= 0 .
+&\quad (\text{because } p'=\tfrac{p}{p-1})
+\end{alignat*}
+
+
+
+Thus $f(a)\ge 0$ for all $a\in(0,\infty)$. 
+
+If $a=0$ or $b=0$, then $ab=0\le \frac{a^p}{p}+\frac{b^{p'}}{p'}$,
+with equality only when $a=b=0$. Therefore, the target inequality is obtained.
+\end{proof}
+
+It can be seen in the proof that the function reaches 0 at the point $b^{1/(p-1)}$, which means the equality holds when $a = b^{1/(p-1)}$. Using the relation $\frac{p}{p-1} = p'$, the equality is attained when $a^p=b^{p'}$.
+
+Based on this lemma, we can prove H\"older's Inequality.
+
+\begin{proof}[The Second Solution of H\"older's Inequality]
+Let us first consider the simplest case. If $\|f\|_{p}=0$ or $\|g\|_{p'}=0$, then $f(x)g(x)=0$ a.e. on $E$, then we have $\|fg\|_{1}=0$. So the theorem holds in this case.
+
+Then we consider the general case. When $\|f\|_{p}>0$ and $\|g\|_{p'}>0$, by Young's inequality setting $a=\frac{|f(x)|}{\|f\|_p}$ and $b=\frac{|g(x)|}{\|g\|_{p'}}$, we obtain
+\[
+\frac{|f(x)g(x)|}{\|f\|_{p}\|g\|_{p'}}
+\le
+\frac{1}{p}\frac{|f(x)|^p}{\|f\|_p^p}
++
+\frac{1}{p'}\frac{|g(x)|^{p'}}{\|g\|_{p'}^{p'}}.
+\]
+
+Integrating both sides over $E$ we have
+\[
+\frac{\|fg\|_1}{\|f\|_p\|g\|_{p'}}\le \frac{1}{p}+\frac{1}{p'}.
+\]
+
+So we have $\|fg\|_1\le \|f\|_p\|g\|_{p'}$.
+
+From the equality condition of Young's inequality, we obtain the equality condition of Hölder's inequality as follows
+\[
+\frac{|f(x)|^p}{\|f\|_p^p}=\frac{|g(x)|^{p'}}{\|g\|_{p'}^{p'}}, \text{ a.e. } x\in E.
+\]
+
+The equality also covers the trivial cases $f=0$ or $g=0$, and it is equivalent to $|f|^p$ and $|g|^{p'}$ being proportional a.e.
+
+\end{proof}
+
+\subsection{The Third Solution}
+
+Finally, we present a proof based on graphs. This approach directly uses the practical meaning of definite integrals as areas to establish Young’s inequality. Here, we do not state Young’s inequality separately but instead provide a complete proof of Hölder’s inequality.
+
+\begin{proof}[The Third Solution of H\"older's Inequality]
+We first prove an auxiliary inequality. Let $s = t^{p-1}$ for $t \ge 0$, so that $t = s^{,p'-1}$ by the relation $\frac{1}{p}+\frac{1}{p'}=1$.
+For any point $(t_{1}, s_{1})$ in the $(t,s)$-plane with $t_{1}, s_{1} \ge 0$, we then obtain
+\[
+s_1 t_1 \le \int_0^{t_1} t^{p-1}\,dt + \int_0^{s_1} s^{p'-1}\,ds.
+\]
+
+The left-hand side is the area of the rectangle with side lengths $t_1$ and $s_1$, while the right-hand side is the sum of the areas under the curve $s = t^{p-1}$ and its inverse
+up to $t_1$ and $s_1$, respectively (see Figure~1.1). Therefore the total area on the right-hand side is larger, which gives the inequality.
+
+
+Computing the integral on the right-hand side, we can equivalently obtain
+\begin{equation}\label{ineq:1}
+    s_1 t_1 \le \frac{t_1^p}{p} + \frac{s_1^{p'}}{p'}.
+\end{equation}
+
+
+\begin{center}
+\includegraphics[width=0.45\textwidth]{figure1.png}\\
+\small Figure 1.1. The region bounded by $s = t^{p-1}$ in the $(t,s)$-plane.
+\end{center}
+
+Next, we use the inequality derived above to prove the final conclusion. Consider nonnegative measurable functions $t_1(x)$ and $s_1(x)$ on $E$ that satisfy
+\begin{equation}\label{ineq:2}
+    \int_{E} t_1(x)^p\,dx = 1,
+\qquad
+\int_{E} s_1(x)^{p'}\,dx = 1.
+\end{equation}
+
+Therefore, integrating \ref{ineq:1} over E and using $\frac{1}{p}+\frac{1}{p'}=1$ yields
+\begin{equation}\label{ineq:3}
+    \int_{E} s_1(x)t_1(x)\,dx \le 1.
+\end{equation}
+
+Next, if $f(x)\in L^p(E)$ and $g(x)\in L^{p'}(E)$, define
+\[
+t_1(x) = \frac{|f(x)|}{\|f\|_p},
+\qquad
+s_1(x) = \frac{|g(x)|}{\|g\|_{p'}}.
+\]
+
+Clearly, both functions $t_1(x)$ and $s_1(x)$ satisfy the normalization conditions \ref{ineq:2} and are both non-negative measurable functions on E. 
+Therefore, inequality \ref{ineq:3} holds, which leads to
+\[
+\|fg\|_1
+\le \|f\|_p \cdot \|g\|_{p'}.
+\]
+
+Finally, we explain the equality condition. It can be seen from the graph that the equality in inequality \ref{ineq:1} holds if and only if the point \((t_1, s_1)\) lies on the curve, which is equivalent to the equality condition of Hölder's inequality being
+\[
+\frac{|g(x)|}{\|g\|_{p'}}=\left(\displaystyle\frac{|f(x)|}{\|f\|_p}\right)^{p-1}.
+\]
+
+This implies that \(|g|\) is proportional to \(|f|^{p-1}\). Taking the \(\frac{p}{p-1}\)-th power of both sides, we obtain that \(|g|^{p'}\) is proportional to \(|f|^p\).
+\end{proof}
+
+
+\subsection{Summary}
+From the above proof of Hölder's inequality, we can once again emphasize several key points in mathematical writing.
+
+\begin{itemize}
+  \item A formal proof should be clearly separated from draft notes; do not simply copy scratch work, but add explanations and structure for the reader.
+  
+  \item Whether to state a lemma separately depends on how central and reusable it is; if it is long, important, or used later, it deserves its own place, otherwise it can be kept
+  inline for better flow.
+  
+  \item Diagrams can sometimes make a proof much more readable, but they should support rather than replace the rigorous argument.
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% References
+% Include references only if there are citations.
+\ifnum\value{cite}>0
+    \small
+    \bibliography{\bibfile}
+    \bibliographystyle{plain}
+\fi
+
+%% The end
+\end{document}
