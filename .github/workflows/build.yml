@@ -16,6 +16,11 @@ jobs:
       - name: Build LaTeX document
         uses: xu-cheng/latex-action@v3
         with:
-          root_file: main.tex  
-          latexmk_use_xelatex: false
-         
+          root_file: main.tex
+
+      - name: Upload PDF
+        uses: actions/upload-artifact@v3
+        with:
+          name: main-pdf
+          path: main.pdf
+
