@@ -16,7 +16,7 @@ To compile locally:
 ```bash
 latexmk -pdf main.tex
 
-```markdown
+
 ## GitHub Actions Workflows
 
 This repository includes two GitHub Actions workflows located under `.github/workflows/`:
