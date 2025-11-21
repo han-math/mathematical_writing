@@ -17,7 +17,7 @@ This repository includes two GitHub Actions workflows located under `.github/wor
 ### 1. `build.yml`
 - Triggered on every `push`.
 - Automatically compiles `main.tex` using `latexmk`.
-- Uploads the generated PDF as an **artifact** named `pdf-output`.
+- Uploads the generated PDF as an artifact named `pdf-output`.
 - You can download the latest compiled PDF by:
   1. Opening the **Actions** tab,
   2. Selecting the most recent **Build PDF** run,
