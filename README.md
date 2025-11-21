@@ -9,13 +9,6 @@ Running `latexmk` in the repository root directory generates the final PDF.
 - Automatically builds the PDF using GitHub Actions  
 - Automatic spell checking on every push
 
-## Build
-
-To compile locally:
-
-```bash
-latexmk -pdf main.tex
-```
 
 ## GitHub Actions Workflows
 
