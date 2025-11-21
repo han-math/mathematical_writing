@@ -15,6 +15,7 @@ To compile locally:
 
 ```bash
 latexmk -pdf main.tex
+```
 
 ## GitHub Actions Workflows
 
